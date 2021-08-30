@@ -9,7 +9,7 @@ import UIKit
 
 class BookmarksTableViewCell: UITableViewCell {
     
-    var bookmarksViewController: UIViewController?
+    weak var bookmarksViewController: UIViewController?
     let items = realm.objects(SavedData.self).sorted(byKeyPath: "bookmarksId", ascending: false)
     
     @IBOutlet weak var cellBackgroundView: UIView!

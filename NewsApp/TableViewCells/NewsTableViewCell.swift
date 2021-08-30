@@ -24,7 +24,7 @@ class NewsTableViewCell: UITableViewCell {
     @IBOutlet weak var saveDoneBtn: UIButton!
 
 //MARK: Properties
-    var viewController: UIViewController?
+    weak var viewController: UIViewController?
     var items: Results<SavedData>!
     var data: [Article]!
     let realm = try! Realm()

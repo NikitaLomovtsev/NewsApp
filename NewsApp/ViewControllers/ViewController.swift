@@ -113,12 +113,13 @@ class ViewController: UIViewController {
         tableView.reloadData()
         spinnerAnimation()
         NetworkManager.shared.getNews(searchText: searchText, apiKey: apiKey) {[weak self] result  in
+            guard let self = self else {return}
             switch result {
             case .success(let newsArray):
-                self?.news = newsArray
+                self.news = newsArray
                 DispatchQueue.main.sync {
-                    self?.spinnerAnimationRemove()
-                    self?.tableView.reloadData()
+                    self.spinnerAnimationRemove()
+                    self.tableView.reloadData()
                 }
             case .failure(let error):
                 print(error)
