@@ -21,7 +21,8 @@ class ViewController: UIViewController {
 //MARK: Properties
     let items = realm.objects(SavedData.self)
     var news: [Article] = []
-    var searchText: String?
+//    var searchText: String?
+    var searchText = ""
     let apiKey = "3033551a360a40a2ae9d42dfb3124d6c"
     let spinner = UIImageView()
     
@@ -35,7 +36,7 @@ class ViewController: UIViewController {
         searchTextField.layer.borderColor = UIColor(red: 38/255, green: 38/255, blue: 38/255, alpha: 1).cgColor
         searchBackgroundView.layer.cornerRadius = 10
         searchBackgroundView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        downloadJSON(searchText: searchText ?? "")
+        fetchNews()
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl?.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
         tableView.refreshControl?.tintColor = UIColor.clear
@@ -82,7 +83,7 @@ class ViewController: UIViewController {
     
 //MARK: Pull to refresh
     @objc func didPullToRefresh(){
-        downloadJSON(searchText: "")
+        fetchNews()
         DispatchQueue.main.async {
             self.tableView.refreshControl?.endRefreshing()
         }
@@ -100,32 +101,30 @@ class ViewController: UIViewController {
     
     func search(){
         searchText = searchTextField.text ?? ""
-        searchText = searchText!.replacingOccurrences(of: " ", with: "")
-        searchText = searchText!.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
+        searchText = searchText.replacingOccurrences(of: " ", with: "")
+        searchText = searchText.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
         searchTextField.endEditing(true)
-        downloadJSON(searchText: searchText!)
+        fetchNews()
     }
     
-//MARK: Download JSON
-    func downloadJSON(searchText: String) -> (){
+//MARK: FetchNews
+    func fetchNews(){
         news.removeAll()
         tableView.reloadData()
         spinnerAnimation()
-        let url = URL(string: "https://newsapi.org/v2/everything?domains=yandex.ru&apiKey=\(apiKey)&q=\(searchText)")
-        URLSession.shared.dataTask(with: url!) { data, response, error in
-            if error == nil{
-                do{
-                    let newsArray = try JSONDecoder().decode(News.self, from: data!)
-                    DispatchQueue.main.sync {
-                        self.spinnerAnimationRemove()
-                        self.news = newsArray.articles
-                        self.tableView.reloadData()
-                    }
-                }catch{
-                    print("JSON ERROR")
+        NetworkManager.shared.getNews(searchText: searchText, apiKey: apiKey) {[weak self] result  in
+            switch result {
+            case .success(let newsArray):
+                self?.news = newsArray
+                DispatchQueue.main.sync {
+                    self?.spinnerAnimationRemove()
+                    self?.tableView.reloadData()
                 }
+            case .failure(let error):
+                print(error)
+
             }
-        }.resume()
+        }
     }
 }
 
