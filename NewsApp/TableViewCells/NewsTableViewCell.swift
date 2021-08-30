@@ -65,7 +65,7 @@ class NewsTableViewCell: UITableViewCell {
         task.urlToImage = data[saveBtn.tag].urlToImage
         //UserDefaults id for reversed realm
         task.bookmarksId = self.bookmarksId
-        self.bookmarksId += 1
+        self.bookmarksId = 1
             try! self.realm.write {
                 self.realm.add(task)
             }
@@ -73,6 +73,7 @@ class NewsTableViewCell: UITableViewCell {
     
 //MARK: SaveDone button
     @IBAction func saveDoneBtnAction(_ sender: Any) {
+        print(bookmarksId)
         vibrate()
         let savedItems = realm.objects(SavedData.self)
         //search for cell in realm
