@@ -21,10 +21,18 @@ class ViewController: UIViewController {
 //MARK: Properties
     let items = realm.objects(SavedData.self)
     var news: [Article] = []
-//    var searchText: String?
     var searchText = ""
     let apiKey = "3033551a360a40a2ae9d42dfb3124d6c"
-    let spinner = UIImageView()
+    
+//MARK: Life cycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupView()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        tableView.reloadData()
+    }
     
 //MARK: Setup View
     func setupView(){
@@ -40,47 +48,10 @@ class ViewController: UIViewController {
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl?.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
         tableView.refreshControl?.tintColor = UIColor.clear
+        Spinner.shared.create(centeredFrom: self.view)
+        Spinner.shared.animation()
     }
-    
-//MARK: Life cycle
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupView()
-        spinnerCreating()
-        spinnerAnimation()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        tableView.reloadData()
-    }
-    
-//MARK: Spinner
-    func spinnerCreating(){
-        let width = CGFloat(40)
-        let height = CGFloat(40)
-        let x = (self.view.frame.size.width / 2) - width / 2
-        let y = (self.view.frame.size.height / 2) - height / 2 - topView.frame.size.height
-        spinner.frame = CGRect(x: x, y: y, width: width, height: height)
-        spinner.image = UIImage(named: "spinner")
-        tableView.addSubview(spinner)
-        spinner.isHidden = true
-    }
-    
-    func spinnerAnimation(){
-        spinner.isHidden = false
-        let anim = CABasicAnimation(keyPath: "transform.rotation")
-        anim.fromValue = 0
-        anim.toValue = CGFloat.pi*2
-        anim.duration = 0.6
-        anim.repeatCount = Float.infinity
-        spinner.layer.add(anim, forKey: "transform.rotation")
-    }
-    
-    func spinnerAnimationRemove(){
-        spinner.layer.removeAllAnimations()
-        spinner.isHidden = true
-    }
-    
+
 //MARK: Pull to refresh
     @objc func didPullToRefresh(){
         fetchNews()
@@ -111,14 +82,14 @@ class ViewController: UIViewController {
     func fetchNews(){
         news.removeAll()
         tableView.reloadData()
-        spinnerAnimation()
+        Spinner.shared.animation()
         NetworkManager.shared.getNews(searchText: searchText, apiKey: apiKey) {[weak self] result  in
             guard let self = self else {return}
             switch result {
             case .success(let newsArray):
                 self.news = newsArray
                 DispatchQueue.main.sync {
-                    self.spinnerAnimationRemove()
+                    Spinner.shared.animationRemove()
                     self.tableView.reloadData()
                 }
             case .failure(let error):
@@ -136,7 +107,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource{
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "NewsTableViewCell", for: indexPath) as! NewsTableViewCell
-        
+
         //cell properties
         cell.viewController = self
         let item = news[indexPath.row]
