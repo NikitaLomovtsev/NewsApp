@@ -73,7 +73,6 @@ class NewsTableViewCell: UITableViewCell {
     
 //MARK: SaveDone button
     @IBAction func saveDoneBtnAction(_ sender: Any) {
-        print(bookmarksId)
         vibrate()
         let savedItems = realm.objects(SavedData.self)
         //search for cell in realm
