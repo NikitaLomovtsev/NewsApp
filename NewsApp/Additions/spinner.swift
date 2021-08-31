@@ -14,11 +14,16 @@ class Spinner: UIImageView{
     let height = CGFloat(40)
     
     func create(centeredFrom view: UIView) {
-        let x = view.frame.size.width / 2 - width / 2
-        let y = view.frame.size.height / 2 - height / 2
-        Spinner.shared.frame = CGRect(x: x, y: y, width: width, height: height)
+//        let x = view.frame.size.width / 2 - width / 2
+//        let y = view.frame.size.height / 2 - height / 2
+//        Spinner.shared.frame = CGRect(x: 0, y: 0, width: width, height: height)
         Spinner.shared.image = UIImage(named: "spinner")
+        Spinner.shared.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(Spinner.shared)
+        NSLayoutConstraint.activate([Spinner.shared.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                                     Spinner.shared.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+                                     Spinner.shared.widthAnchor.constraint(equalToConstant: 40),
+                                     Spinner.shared.heightAnchor.constraint(equalToConstant: 40)])
         Spinner.shared.isHidden = true
     }
     

@@ -9,7 +9,6 @@ import UIKit
 import SafariServices
 import RealmSwift
 
-
 class ViewController: UIViewController {
 
 //MARK: Outlets
@@ -35,7 +34,7 @@ class ViewController: UIViewController {
     }
     
 //MARK: Setup View
-    func setupView(){
+    private func setupView(){
         tableView.delegate = self
         tableView.dataSource = self
         searchTextField.layer.cornerRadius = 5
@@ -44,19 +43,19 @@ class ViewController: UIViewController {
         searchTextField.layer.borderColor = UIColor(red: 38/255, green: 38/255, blue: 38/255, alpha: 1).cgColor
         searchBackgroundView.layer.cornerRadius = 10
         searchBackgroundView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        fetchNews()
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl?.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
         tableView.refreshControl?.tintColor = UIColor.clear
         Spinner.shared.create(centeredFrom: self.view)
         Spinner.shared.animation()
+        fetchNews()
     }
 
 //MARK: Pull to refresh
     @objc func didPullToRefresh(){
         fetchNews()
-        DispatchQueue.main.async {
-            self.tableView.refreshControl?.endRefreshing()
+        DispatchQueue.main.async { [weak self] in
+            self?.tableView.refreshControl?.endRefreshing()
         }
     }
     
@@ -70,7 +69,7 @@ class ViewController: UIViewController {
         search()
     }
     
-    func search(){
+    private func search(){
         searchText = searchTextField.text ?? ""
         searchText = searchText.replacingOccurrences(of: " ", with: "")
         searchText = searchText.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
@@ -79,22 +78,20 @@ class ViewController: UIViewController {
     }
     
 //MARK: FetchNews
-    func fetchNews(){
+   private func fetchNews(){
         news.removeAll()
         tableView.reloadData()
         Spinner.shared.animation()
-        NetworkManager.shared.getNews(searchText: searchText, apiKey: apiKey) {[weak self] result  in
-            guard let self = self else {return}
+        NetworkManager.shared.getNews(searchText: searchText, apiKey: apiKey) {[unowned self] result  in
             switch result {
             case .success(let newsArray):
                 self.news = newsArray
-                DispatchQueue.main.sync {
+                DispatchQueue.main.sync { [unowned self] in
                     Spinner.shared.animationRemove()
                     self.tableView.reloadData()
                 }
             case .failure(let error):
-                print(error)
-
+                print("Error received requesting data: \(error)")
             }
         }
     }
@@ -143,8 +140,10 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource{
         }
         return cell
     }
-    
+}
+
 //MARK:: SafariViewController
+extension ViewController{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let item = news[indexPath.row]
         let url = URL(string: item.url)

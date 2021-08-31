@@ -39,6 +39,26 @@ class NewsTableViewCell: UITableViewCell {
         }
     }
     
+//    func configure(article: Article){
+//        let link = article.urlToImage
+//        photoImageView.downloaded(from: link)
+//        titleLbl.text = article.title
+//        publishedAtLbl.text = String(article.publishedAt.map({$0 == "T" || $0 == "Z" ? " " : $0}).dropLast(4))
+//        authorLbl.text = (article.author ?? "NONAME").uppercased()
+//        descriptionLbl.text = article.description
+//
+//        cellBackgroundView.layer.cornerRadius = 10
+//        photoImageView.layer.cornerRadius = 10
+//        photoImageView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+//
+//        saveDoneBtn.isHidden = true
+//        if saveDoneBtn.isHidden == false{
+//            saveBtn.isHidden = true
+//        } else {
+//            saveBtn.isHidden = false
+//        }
+//    }
+    
 //MARK: Vibrate
     func vibrate(){
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
@@ -82,7 +102,7 @@ class NewsTableViewCell: UITableViewCell {
                 try! realm.write{
                     realm.delete(savedItems[index])
                 }
-                DispatchQueue.main.async {
+                DispatchQueue.main.async { [unowned self] in
                     self.saveBtn.isHidden = false
                     self.saveDoneBtn.isHidden = true
                 }
