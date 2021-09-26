@@ -1,4 +1,4 @@
-# NewsApp
+# NewsApp - my first project in swift 
 <img src="https://raw.githubusercontent.com/NikitaLomovtsev/NewsApp/main/newsapppromo.png?raw=true" />
 An iOS app that displays latest news from News API https://newsapi.org
 
