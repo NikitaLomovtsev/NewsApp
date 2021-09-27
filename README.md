@@ -14,6 +14,7 @@ The app has several main features:
 
 # Keywords
 * Newsapi.org
+* JSON & Codable
 * Realm
 * UserDefaults
 * ActivityController
