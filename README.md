@@ -11,3 +11,11 @@ The app has several main features:
 3. Share article using native iOS share sheet UIActivityController.
 4. Read article inside a Safari Webview.
 5. Search news based on the search query you type on the search bar.
+
+# Keywords
+* Newsapi.org
+* Realm
+* UserDefaults
+* ActivityController
+* Safari Webview
+* Search
